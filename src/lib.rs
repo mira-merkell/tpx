@@ -3,7 +3,7 @@ use std::sync::mpsc::{
     SyncSender,
 };
 
-pub enum Cont {
+pub enum Ctn {
     TASK(Task),
     DONE,
 }
@@ -21,7 +21,7 @@ impl Executor {
             rayon::scope(|s| {
                 for task in rx {
                     s.spawn(|_| {
-                        if let Cont::TASK(res_task) = task.invoke() {
+                        if let Ctn::TASK(res_task) = task.invoke() {
                             tx.send(res_task).unwrap();
                         }
                     });
@@ -38,20 +38,20 @@ impl Executor {
         &self,
         f: F,
     ) where
-        F: FnOnce() -> Cont + Send + 'static,
+        F: FnOnce() -> Ctn + Send + 'static,
     {
         self.tx.send(Task::new(f)).unwrap();
     }
 }
 
 pub struct Task {
-    f: Box<dyn FnOnce() -> Cont + Send + 'static>,
+    f: Box<dyn FnOnce() -> Ctn + Send + 'static>,
 }
 
 impl Task {
     fn new<F>(f: F) -> Self
     where
-        F: FnOnce() -> Cont + Send + 'static,
+        F: FnOnce() -> Ctn + Send + 'static,
     {
         let f = Box::new(f);
         Self {
@@ -59,14 +59,14 @@ impl Task {
         }
     }
 
-    fn invoke(self) -> Cont {
+    fn invoke(self) -> Ctn {
         (self.f)()
     }
 }
 
-pub fn continue_with<F>(f: F) -> Cont
+pub fn continue_with<F>(f: F) -> Ctn
 where
-    F: FnOnce() -> Cont + Send + 'static,
+    F: FnOnce() -> Ctn + Send + 'static,
 {
-    Cont::TASK(Task::new(f))
+    Ctn::TASK(Task::new(f))
 }
