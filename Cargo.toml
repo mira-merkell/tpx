@@ -1,13 +1,12 @@
 [package]
 name = "tpx"
 version = "0.1.0"
-edition = "2021"
 description = "Task scheduler"
+edition = "2021"
 homepage = "https://github.com/marek-miller/tpx"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/marek-miller/tpx.git"
-
 
 [dependencies]
 rayon = "1.7.0"
